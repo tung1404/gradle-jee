@@ -1,0 +1,84 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'war'
+
+group = 'vn.tungnt'
+version = '1.0.0-SNAPSHOT'
+buildDir = 'target'
+
+ext {
+	javaVersion = '1.8'
+	encoding = 'UTF-8'
+	versions = [
+		hsqldb : '2.3.2',
+		spring : '4.1.6.RELEASE',
+		spring_boot : '1.3.3.RELEASE',
+		resteasy_spring_boot_starter : '2.0.0-RELEASE'
+	]
+}
+
+eclipse {
+	project {
+	  natures.add 'org.eclipse.jdt.groovy.core.groovyNature'
+	}
+}
+
+buildscript {
+	ext.spring_boot = "1.3.3.RELEASE"
+	
+    repositories {
+    	jcenter()
+    	mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot"
+    }
+}
+apply plugin: 'spring-boot'			// FIX: able to run junit test and embeddedContainer
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+[compileJava, compileTestJava]*.options*.encoding = encoding
+
+repositories {
+    jcenter()
+    mavenCentral() 
+}
+
+def lib = [
+	'spring' : [
+		"org.springframework:spring-jdbc:${versions.spring}",
+		"org.springframework.boot:spring-boot-starter-web:${versions.spring_boot}",
+		"org.springframework.boot:spring-boot-starter-data-jpa:${versions.spring_boot}",
+		"com.paypal.springboot:resteasy-spring-boot-starter:${versions.resteasy_spring_boot_starter}"
+	],
+	'etc' : [
+		"org.hsqldb:hsqldb:${versions.hsqldb}",
+		"javax.ws.rs:javax.ws.rs-api:2.0",
+		"org.apache.commons:commons-lang3:3.3.2",
+		"mysql:mysql-connector-java:5.1.21"
+		],
+	'test' : [
+		"org.springframework.boot:spring-boot-starter-test:${versions.spring_boot}"
+	]
+]
+
+dependencies {
+	compile lib.spring, lib.etc
+	testCompile lib.test
+}
+
+def makeDirectory = { if (!it.exists()) it.mkdirs() }
+
+// 1. java source directory  : src/main/java, src/test/java
+// 2. resource directory     : src/main/resource, src/test/resource
+// 3. web source directory   : src/main/webapp, src/main/webapp/WEB-INF
+task initProject(description: 'initialize project') {
+	doLast {
+		sourceSets*.java.srcDirs*.each makeDirectory
+		sourceSets*.resources.srcDirs*.each makeDirectory
+		[webAppDir, new File(webAppDir, '/WEB-INF')].each makeDirectory
+	}
+}
+eclipseClasspath.dependsOn initProject
+compileJava.dependsOn clean
