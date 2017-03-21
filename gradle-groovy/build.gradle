@@ -1,0 +1,46 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+
+repositories { 
+	mavenCentral()
+	jcenter()
+}
+
+eclipse {
+	project {
+	  natures.add 'org.eclipse.jdt.groovy.core.groovyNature'
+	}
+}
+
+dependencies {
+	compile 'org.codehaus.groovy:groovy-all:2.4.9'
+	testCompile 'junit:junit:4.12'
+}
+
+task initProject(description: 'Initialize project directory structure.') {
+	doLast {
+		// Default package to be created in each src dir.
+		def defaultPackage = 'vn/groovy/sample'
+		
+		// http://stackoverflow.com/a/23004783
+		['java', 'groovy', 'resources'].each {
+			sourceSets*."${it}".srcDirs*.each { dir ->
+				def newDir = new File(dir, defaultPackage)
+				println("newDir: " + newDir)
+				if( !newDir.exists() ) {
+					println("Creating directory $newDir")
+					newDir.mkdirs()  // Create dir.
+				} else {
+					println("folder exists already")
+				}
+			}
+		}
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '3.4.1'
+}
+
+defaultTasks 'initProject'
