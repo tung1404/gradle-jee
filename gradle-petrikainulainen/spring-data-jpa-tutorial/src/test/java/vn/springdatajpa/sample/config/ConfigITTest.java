@@ -25,7 +25,7 @@ import vn.springdatajpa.sample.repositories.ActorRepository;
         TransactionalTestExecutionListener.class,
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("classpath:actor-entries.xml")
-public class ITFindBySearchTermTest {
+public class ConfigITTest {
 	
 	@Autowired
 	private ActorRepository actorRepository;
