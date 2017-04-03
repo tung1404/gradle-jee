@@ -24,10 +24,10 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackages = {
         "vn.springdatajpa.sample"
 })
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application-${spring.profiles.active}.properties")
 class PersistenceContext {
 	
-    @Autowired
+	@Autowired
     private Environment env;
     
     @Bean(destroyMethod = "close")
