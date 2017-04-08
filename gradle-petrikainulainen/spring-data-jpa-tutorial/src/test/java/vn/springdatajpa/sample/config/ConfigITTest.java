@@ -20,22 +20,27 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import vn.springdatajpa.sample.entities.Actor;
 import vn.springdatajpa.sample.repositories.ActorRepository;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {PersistenceContext.class})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
-        DbUnitTestExecutionListener.class})
+@ContextConfiguration(classes = { PersistenceContext.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, TransactionalTestExecutionListener.class,
+		DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:actor-entries.xml")
-@TestPropertySource(properties = {"spring.profiles.active=test"})
+@TestPropertySource(properties = { "spring.profiles.active=test" })
 public class ConfigITTest {
-	
+	interface HelloService {
+		void hello(String word);
+
+	}
 	@Autowired
 	private ActorRepository actorRepository;
-	
+
 	@Test
-    public void findAll_ShouldReturnOneEntry() {
-        List<Actor> searchResults = actorRepository.findAll();
-        assertThat(searchResults).hasSize(1);
-    }
+	public void findAll_ShouldReturnOneEntry() {
+		HelloService helloString = (String word) -> {
+			System.out.print(word);
+		};
+		helloString.hello("abc");
+		List<Actor> searchResults = actorRepository.findAll();
+		assertThat(searchResults).hasSize(1);
+	}
 }
