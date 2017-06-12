@@ -19,6 +19,7 @@ dependencies {
 }
 
 task initProject(description: 'Initialize project directory structure.') {
+	
 	doLast {
 		// Default package to be created in each src dir.
 		def defaultPackage = 'vn/groovy/sample'
@@ -36,6 +37,11 @@ task initProject(description: 'Initialize project directory structure.') {
 				}
 			}
 		}
+		
+		cleanEclipse
+		eclipse
+		
+		println 'Done'
 	}
 }
 
