@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 repositories { 
 	mavenCentral()
@@ -18,35 +19,19 @@ dependencies {
 	testCompile 'junit:junit:4.12'
 }
 
-task initProject(description: 'Initialize project directory structure.') {
-	
-	doLast {
-		// Default package to be created in each src dir.
-		def defaultPackage = 'vn/groovy/sample'
-		
-		// http://stackoverflow.com/a/23004783
-		['java', 'groovy', 'resources'].each {
-			sourceSets*."${it}".srcDirs*.each { dir ->
-				def newDir = new File(dir, defaultPackage)
-				println("newDir: " + newDir)
-				if( !newDir.exists() ) {
-					println("Creating directory $newDir")
-					newDir.mkdirs()  // Create dir.
-				} else {
-					println("folder exists already")
-				}
-			}
-		}
-		
-		cleanEclipse
-		eclipse
-		
-		println 'Done'
-	}
-}
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '3.4.1'
 }
 
-defaultTasks 'initProject'
+clean.dependsOn tasks.eclipse, tasks.idea
+
+eclipseClasspath.doFirst {
+    initSourceFolders()
+}
+
+def initSourceFolders() {
+    sourceSets*.java.srcDirs*.each { it.mkdirs() }
+	sourceSets*.groovy.srcDirs*.each { it.mkdirs() }
+    sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
